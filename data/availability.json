@@ -1,0 +1,37 @@
+[
+  {
+    "doctor_id": "DOC001",
+    "days_ahead": 1,
+    "time": "09:30"
+  },
+  {
+    "doctor_id": "DOC001",
+    "days_ahead": 2,
+    "time": "14:00"
+  },
+  {
+    "doctor_id": "DOC002",
+    "days_ahead": 1,
+    "time": "11:00"
+  },
+  {
+    "doctor_id": "DOC002",
+    "days_ahead": 3,
+    "time": "15:30"
+  },
+  {
+    "doctor_id": "DOC003",
+    "days_ahead": 2,
+    "time": "10:00"
+  },
+  {
+    "doctor_id": "DOC004",
+    "days_ahead": 1,
+    "time": "13:00"
+  },
+  {
+    "doctor_id": "DOC005",
+    "days_ahead": 3,
+    "time": "09:00"
+  }
+]

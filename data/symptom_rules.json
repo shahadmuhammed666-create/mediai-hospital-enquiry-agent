@@ -1,0 +1,33 @@
+{
+  "emergency_keywords": [
+    "chest pain",
+    "trouble breathing",
+    "difficulty breathing",
+    "severe allergic reaction",
+    "swelling of face",
+    "swelling of lips",
+    "heavy bleeding"
+  ],
+  "urgent_keywords": [
+    "high fever",
+    "sudden severe pain",
+    "rapidly worsening"
+  ],
+  "rules": [
+    {
+      "keywords": ["rash", "rashes", "itchy skin", "skin irritation"],
+      "specialty": "Dermatology",
+      "general_info": "Rashes can be associated with many causes, including irritation or allergies. A doctor can assess your symptoms."
+    },
+    {
+      "keywords": ["knee pain", "joint pain", "back pain", "bone pain"],
+      "specialty": "Orthopedics",
+      "general_info": "Joint, back, or bone pain can have many causes. A doctor can assess your symptoms and recommend next steps."
+    },
+    {
+      "keywords": ["palpitations", "heart rhythm"],
+      "specialty": "Cardiology",
+      "general_info": "Palpitations can have many causes. A doctor can assess your symptoms and advise whether specialist care is appropriate."
+    }
+  ]
+}

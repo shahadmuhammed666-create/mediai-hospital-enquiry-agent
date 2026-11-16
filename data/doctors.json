@@ -1,0 +1,27 @@
+[
+  {
+    "doctor_id": "DOC001",
+    "name": "Dr. Maya Patel",
+    "specialty": "Dermatology"
+  },
+  {
+    "doctor_id": "DOC002",
+    "name": "Dr. Arjun Mehta",
+    "specialty": "Dermatology"
+  },
+  {
+    "doctor_id": "DOC003",
+    "name": "Dr. Sara Khan",
+    "specialty": "Cardiology"
+  },
+  {
+    "doctor_id": "DOC004",
+    "name": "Dr. Rohan Shah",
+    "specialty": "General Practice"
+  },
+  {
+    "doctor_id": "DOC005",
+    "name": "Dr. Nisha Rao",
+    "specialty": "Orthopedics"
+  }
+]
