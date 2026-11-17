@@ -7,7 +7,7 @@ services:
     startCommand: gunicorn app:app --workers 1 --threads 4 --timeout 180
     healthCheckPath: /healthz
     envVars:
-      - key: GEMINI_API_KEY
+      - key: OPENAI_API_KEY
         sync: false
-      - key: GEMINI_MODEL
-        value: gemini-3.6-flash
+      - key: OPENAI_MODEL
+        value: gpt-4o-mini

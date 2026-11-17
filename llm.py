@@ -101,7 +101,7 @@ class RealLLM(LLMClient):
 
 class GeminiLLM(LLMClient):
     API_URL = "https://generativelanguage.googleapis.com/v1beta/models"
-    DEFAULT_MODEL = "gemini-3.8-flash"
+    DEFAULT_MODEL = "gemini-3.5-flash-lite"
 
     def __init__(self, model: str | None = None, timeout: float = 30.0) -> None:
         api_key = os.environ.get("GEMINI_API_KEY")
