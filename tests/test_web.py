@@ -26,6 +26,8 @@ def test_home_page_contains_medi_ai_chat_interface() -> None:
     assert b"MediAi" in response.data
     assert b"message-input" in response.data
     assert b"send-button" in response.data
+    assert b"OpenAI using this site's API key" in response.data
+    assert b"Gemini quota" not in response.data
     assert client.get("/static/chat.css").status_code == 200
     assert client.get("/static/chat.js").status_code == 200
 
