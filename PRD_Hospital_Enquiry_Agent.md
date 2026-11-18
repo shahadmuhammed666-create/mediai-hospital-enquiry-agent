@@ -106,7 +106,7 @@ Each tool is a plain Python function with a registry entry containing `name`, `d
 ### R7. Tests: Fake LLM First, Then a Real One
 - Define an `LLMClient` interface with one method: `complete(messages) -> str`.
 - **`FakeLLM`:** returns scripted responses in order, so tests are fast, free, and deterministic.
-- **`RealLLM`:** a thin wrapper around OpenAI Chat Completions. Read the API key from `OPENAI_API_KEY` and the optional model name from `OPENAI_MODEL`; never hardcode credentials.
+- **`GeminiLLM`:** a thin wrapper around the Gemini API. Read the API key from `GEMINI_API_KEY` and the optional model name from `GEMINI_MODEL`; never hardcode credentials.
 - The agent receives the LLM client through its constructor (dependency injection), so swapping Fake ↔ Real needs no agent code changes.
 
 **Required tests with `FakeLLM` (pytest):**
@@ -119,7 +119,7 @@ Each tool is a plain Python function with a registry entry containing `name`, `d
 7. Memory: second task for the same patient uses stored info from the first.
 8. Unit tests for each tool against the mock data.
 
-**Then real LLM:** run the same example enquiries manually with `python main.py --real "..."` plus a small set of smoke tests marked `@pytest.mark.real_llm` that are skipped unless `OPENAI_API_KEY` is present. Review the logs and compare the behaviour to the fake-LLM runs.
+**Then real LLM:** run the same example enquiries manually with `python main.py --real "..."` plus a small set of smoke tests marked `@pytest.mark.real_llm` that are skipped unless `GEMINI_API_KEY` is present. Review the logs and compare the behaviour to the fake-LLM runs.
 
 ## 5. Suggested Project Structure
 
@@ -127,7 +127,7 @@ Each tool is a plain Python function with a registry entry containing `name`, `d
 hospital_agent/
 ├── main.py                 # CLI entry point (--real flag)
 ├── agent.py                # Agent class: plan + think/act/look loop
-├── llm.py                  # LLMClient interface, FakeLLM, RealLLM
+├── llm.py                  # LLMClient interface, FakeLLM, GeminiLLM
 ├── tools.py                # 4 tools + registry with descriptions
 ├── memory.py               # load/save/clear long-term memory
 ├── safety.py               # approval prompt, step limit, emergency check
@@ -162,7 +162,7 @@ hospital_agent/
 - No booking ever happens without explicit approval.
 - Every run produces a complete, readable log.
 - No agent framework is imported anywhere (verify with a grep for `langchain`).
-- The same agent code runs with both `FakeLLM` and `RealLLM`.
+- The same agent code runs with both `FakeLLM` and `GeminiLLM`.
 
 ## 8. Out of Scope for v1 (Future Ideas)
 

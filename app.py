@@ -6,7 +6,7 @@ from collections.abc import Mapping
 from flask import Flask, jsonify, render_template, request
 
 from agent import Agent
-from llm import RealLLM
+from llm import GeminiLLM
 from logger import NullLogger
 from tools import TOOLS, ToolDefinition
 
@@ -50,11 +50,11 @@ def chat():
     except ValueError as error:
         return jsonify(error=str(error)), 400
 
-    if not os.environ.get("OPENAI_API_KEY"):
-        return jsonify(error="MediAi is not configured with an OpenAI API key yet."), 503
+    if not os.environ.get("GEMINI_API_KEY"):
+        return jsonify(error="MediAi is not configured with a Gemini API key yet."), 503
 
     try:
-        client = RealLLM(timeout=120.0)
+        client = GeminiLLM(timeout=120.0)
         agent = Agent(
             client,
             tools=_WEB_TOOLS,

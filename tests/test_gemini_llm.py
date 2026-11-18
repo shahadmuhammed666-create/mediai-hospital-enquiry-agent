@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import io
 import json
+import os
 
 import pytest
 
@@ -30,11 +31,7 @@ def test_gemini_llm_sends_request_and_returns_text(
         captured["body"] = json.loads(request.data.decode("utf-8"))
         return io.BytesIO(
             json.dumps(
-                {
-                    "candidates": [
-                        {"content": {"parts": [{"text": '{"ok": true}'}]}}
-                    ]
-                }
+                {"candidates": [{"content": {"parts": [{"text": '{"ok": true}'}]}}]}
             ).encode("utf-8")
         )
 
@@ -100,3 +97,26 @@ def test_gemini_llm_reports_read_timeout(monkeypatch: pytest.MonkeyPatch) -> Non
 
     with pytest.raises(RuntimeError, match="timed out after 5 seconds.*--timeout"):
         GeminiLLM(timeout=5).complete([{"role": "user", "content": "Hello"}])
+
+
+@pytest.mark.real_llm
+@pytest.mark.skipif(
+    not os.environ.get("GEMINI_API_KEY"),
+    reason="GEMINI_API_KEY is not set",
+)
+def test_gemini_live_smoke() -> None:
+    client = GeminiLLM()
+    response = client.complete(
+        [
+            {
+                "role": "system",
+                "content": "Reply with a JSON object only.",
+            },
+            {
+                "role": "user",
+                "content": 'Return exactly {"ok": true}. This is a connectivity check.',
+            },
+        ]
+    )
+
+    assert json.loads(response).get("ok") is True

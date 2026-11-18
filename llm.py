@@ -32,76 +32,9 @@ class FakeLLM(LLMClient):
         return self._responses.popleft()
 
 
-class RealLLM(LLMClient):
-    API_URL = "https://api.openai.com/v1/chat/completions"
-    DEFAULT_MODEL = "gpt-4o-mini"
-
-    def __init__(self, model: str | None = None, timeout: float = 30.0) -> None:
-        api_key = os.environ.get("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("Set OPENAI_API_KEY to use RealLLM.")
-        if timeout <= 0:
-            raise ValueError("timeout must be greater than zero.")
-
-        self._api_key = api_key
-        self._model = model or os.environ.get("OPENAI_MODEL") or self.DEFAULT_MODEL
-        self._timeout = timeout
-
-    def complete(self, messages: Sequence[Message]) -> str:
-        request_messages = []
-        for message in messages:
-            role = message.get("role")
-            content = message.get("content")
-            if not isinstance(role, str) or not isinstance(content, str):
-                raise ValueError("Every message must contain string role and content fields.")
-            request_messages.append({"role": role, "content": content})
-
-        body = json.dumps(
-            {
-                "model": self._model,
-                "messages": request_messages,
-                "response_format": {"type": "json_object"},
-            }
-        ).encode("utf-8")
-        request = Request(
-            self.API_URL,
-            data=body,
-            headers={
-                "Authorization": f"Bearer {self._api_key}",
-                "Content-Type": "application/json",
-            },
-            method="POST",
-        )
-
-        try:
-            with urlopen(request, timeout=self._timeout) as response:
-                payload = json.loads(response.read().decode("utf-8"))
-        except TimeoutError as error:
-            raise RuntimeError(
-                f"OpenAI API request timed out after {self._timeout:g} seconds. "
-                "Check your connection or retry with a longer --timeout."
-            ) from error
-        except HTTPError as error:
-            raise RuntimeError(
-                f"OpenAI API returned HTTP {error.code}."
-            ) from error
-        except URLError as error:
-            raise RuntimeError(f"Could not reach the OpenAI API: {error.reason}") from error
-        except (UnicodeDecodeError, json.JSONDecodeError) as error:
-            raise RuntimeError("OpenAI API returned an invalid JSON response.") from error
-
-        try:
-            content = payload["choices"][0]["message"]["content"]
-        except (KeyError, IndexError, TypeError) as error:
-            raise RuntimeError("OpenAI API response did not contain a message.") from error
-        if not isinstance(content, str) or not content.strip():
-            raise RuntimeError("OpenAI API returned an empty message.")
-        return content
-
-
 class GeminiLLM(LLMClient):
     API_URL = "https://generativelanguage.googleapis.com/v1beta/models"
-    DEFAULT_MODEL = "gemini-3.5-flash-lite"
+    DEFAULT_MODEL = "gemini-3.8-flash"
 
     def __init__(self, model: str | None = None, timeout: float = 30.0) -> None:
         api_key = os.environ.get("GEMINI_API_KEY")
@@ -127,7 +60,7 @@ class GeminiLLM(LLMClient):
                 continue
             if role == "assistant":
                 role = "model"
-            elif role not in ("user", "model"):
+            elif role != "user":
                 raise ValueError(f"Gemini does not support the message role {role!r}.")
 
             if contents and contents[-1]["role"] == role:
@@ -177,9 +110,13 @@ class GeminiLLM(LLMClient):
 
         try:
             parts = payload["candidates"][0]["content"]["parts"]
-            content = "".join(part["text"] for part in parts if isinstance(part.get("text"), str))
+            content = "".join(
+                part["text"] for part in parts if isinstance(part.get("text"), str)
+            )
         except (KeyError, IndexError, TypeError, AttributeError) as error:
-            raise RuntimeError("Gemini API response did not contain a text message.") from error
+            raise RuntimeError(
+                "Gemini API response did not contain a text message."
+            ) from error
         if not content.strip():
             raise RuntimeError("Gemini API returned an empty message.")
         return content

@@ -4,7 +4,7 @@ import argparse
 import sys
 
 from agent import Agent
-from llm import GeminiLLM, RealLLM
+from llm import GeminiLLM
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -13,12 +13,6 @@ def main(argv: list[str] | None = None) -> int:
         "--real",
         action="store_true",
         help="use a real model API",
-    )
-    parser.add_argument(
-        "--provider",
-        choices=("openai", "gemini"),
-        default="openai",
-        help="API provider to use with --real (default: openai)",
     )
     parser.add_argument(
         "--timeout",
@@ -42,8 +36,7 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("The patient enquiry must not be empty.")
 
     try:
-        llm_class = GeminiLLM if args.provider == "gemini" else RealLLM
-        llm = llm_class(timeout=args.timeout)
+        llm = GeminiLLM(timeout=args.timeout)
         answer = Agent(llm).run(
             message,
             patient_id=args.patient_id,

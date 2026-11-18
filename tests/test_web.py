@@ -26,8 +26,7 @@ def test_home_page_contains_medi_ai_chat_interface() -> None:
     assert b"MediAi" in response.data
     assert b"message-input" in response.data
     assert b"send-button" in response.data
-    assert b"OpenAI using this site's API key" in response.data
-    assert b"Gemini quota" not in response.data
+    assert b"Google Gemini using this site's API key" in response.data
     assert client.get("/static/chat.css").status_code == 200
     assert client.get("/static/chat.js").status_code == 200
 
@@ -35,7 +34,7 @@ def test_home_page_contains_medi_ai_chat_interface() -> None:
 def test_chat_endpoint_returns_agent_answer_without_real_api(
     monkeypatch,
 ) -> None:
-    monkeypatch.setenv("OPENAI_API_KEY", "test-key-not-a-secret")
+    monkeypatch.setenv("GEMINI_API_KEY", "test-key-not-a-secret")
     responses = [
         _PLAN,
         json.dumps(
@@ -47,7 +46,7 @@ def test_chat_endpoint_returns_agent_answer_without_real_api(
     ]
     monkeypatch.setattr(
         web_app,
-        "RealLLM",
+        "GeminiLLM",
         lambda timeout: FakeLLM(responses),
     )
 
@@ -68,8 +67,7 @@ def test_chat_endpoint_returns_agent_answer_without_real_api(
 
 
 def test_chat_endpoint_rejects_missing_api_key(monkeypatch) -> None:
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    monkeypatch.setenv("GEMINI_API_KEY", "unused-test-key")
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
 
     response = web_app.app.test_client().post(
         "/api/chat",
@@ -77,7 +75,7 @@ def test_chat_endpoint_rejects_missing_api_key(monkeypatch) -> None:
     )
 
     assert response.status_code == 503
-    assert "OpenAI API key" in response.json["error"]
+    assert "Gemini API key" in response.json["error"]
 
 
 def test_chat_endpoint_rejects_invalid_history_role(monkeypatch) -> None:
